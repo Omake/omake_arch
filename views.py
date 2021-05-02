@@ -1,4 +1,4 @@
-from omake_framework.template_controller import render
+from omake_framework.templator import render
 
 
 class Index:

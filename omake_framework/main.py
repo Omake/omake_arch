@@ -12,6 +12,8 @@ class Framework:
         # Запрашиваемый адрес
         requested_url = environ['PATH_INFO'].lower()
 
+        request_method = environ['REQUEST_METHOD']
+
         if requested_url in self.routes:
             view = self.routes[requested_url]
 
