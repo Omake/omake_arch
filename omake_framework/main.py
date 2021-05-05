@@ -11,6 +11,11 @@ class Framework:
     def __call__(self, environ, start_response):
         # Запрашиваемый адрес
         requested_url = environ['PATH_INFO'].lower()
+
+        # Проверяем слэш в конце адреса
+        if not requested_url.endswith('/'):
+            requested_url = f"{requested_url}/"
+
         request_method = environ['REQUEST_METHOD']
         query_str = environ['QUERY_STRING']
 
@@ -22,14 +27,14 @@ class Framework:
             params = self.parse_input(query_str)
 
             request['request_params'] = params
-            print(f"Получен get-запрос. Параметры:\n{params}")
 
         elif request_method == 'POST':
             data = Framework.get_data(environ)
             data = Framework.parse_wsgi_input_data(data)
 
+            for i in data:
+                print(f"{i}: {data[i]}")
             request['data'] = data
-            print(f"Получен post-запрос. Данные:\n{data}")
 
         # Пропускаем запрос через Page Controller
         if requested_url in self.routes:

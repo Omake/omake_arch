@@ -1,11 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Main page</title>
-</head>
-<body>
-<h1>Welcome!</h1>
-<h3>There will be a lot of features!</h3>
-</body>
-</html>
+{% extends "base.html" %}
+{% block title %}
+	Обучение программированию
+{% endblock %}
+{% block style %}
+	{% include "inc-style.html" %}
+{% endblock %}
+{% block menu %}
+	{% include "inc-menu.html" %}
+{% endblock %}
+{% block body %}
+	{% include "inc-index-body.html" %}
+{% endblock %}
