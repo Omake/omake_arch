@@ -20,7 +20,9 @@ class Framework:
         query_str = environ['QUERY_STRING']
 
         # Создаем реквест
-        request = {}
+        request = {
+            'method': request_method
+        }
 
         # Выполняем действия в зависимости от типа запроса и заполняем request
         if request_method == 'GET':
@@ -32,8 +34,6 @@ class Framework:
             data = Framework.get_data(environ)
             data = Framework.parse_wsgi_input_data(data)
 
-            for i in data:
-                print(f"{i}: {data[i]}")
             request['data'] = data
 
         # Пропускаем запрос через Page Controller

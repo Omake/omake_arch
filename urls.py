@@ -1,7 +1,8 @@
-from views import Index, About
+from views import Index, About, CategoryCreate
 
 
 route_list = {
     '/': Index(),
-    '/about/': About()
+    '/about/': About(),
+    '/create-category/': CategoryCreate(),
 }
