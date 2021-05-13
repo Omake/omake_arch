@@ -1,4 +1,4 @@
-import abc
+import quopri
 
 
 class Course:
@@ -41,7 +41,7 @@ class CourseFactory:
 
 class Engine:
     def __init__(self):
-        self.categories =[]
+        self.categories = []
         self.courses = []
 
     @staticmethod
@@ -51,3 +51,14 @@ class Engine:
     @staticmethod
     def create_course(course_type, name, category):
         return CourseFactory.create(course_type, name, category)
+
+    @staticmethod
+    def decode_value(val):
+        val_b = bytes(val.replace('%', '=').replace("+", " "), 'UTF-8')
+        val_decode_str = quopri.decodestring(val_b)
+        return val_decode_str.decode('UTF-8')
+
+    def get_category_by_id(self, category_id):
+        for item in self.categories:
+            if item.id == category_id:
+                return item
