@@ -1,12 +1,14 @@
 from omake_framework.templator import render
-from patterns.creational_patterns import Engine
+from patterns.creational_patterns import Engine, Logger
 
 # Скопировал этот момент так как не придумал рациональней
 site = Engine()
+logger = Logger('main_logger')
 
 
 class Index:
     def __call__(self, request):
+        logger.log('Открыт список категорий')
         return '200 OK', render('index.html', objects_list=site.categories)
 
 
@@ -17,18 +19,44 @@ class About:
 
 class CourseList:
     def __call__(self, request):
+        logger.log('Открыт список курсов')
         category = site.get_category_by_id(int(request['request_params']['id']))
         return '200 OK', render('course_list.html', objects_list=category.courses, name=category.name, id=category.id)
 
 
 class CourseCreate:
+    category_id = -1
+
     def __call__(self, request):
-        pass
+
+        if request['method'] == 'POST':
+            data = request['data']
+            course_name = site.decode_value(data['name'])
+            category = site.get_category_by_id(int(self.category_id))
+            new_course = site.create_category(course_name, self.category_id)
+
+            # Добавляем курс в категорию
+            category.courses.append(new_course)
+
+            # Добавляем курс в движок
+            site.courses.append(new_course)
+
+            return '200 OK', render('course_list.html', objects_list=category.courses,
+                                    name=category.name, id=category.id)
+
+        else:
+            self.category_id = int(request['request_params']['id'])
+            category = site.get_category_by_id(int(self.category_id))
+
+            return '200 OK', render('create_course.html', name=category.name)
 
 
-class CategoryList:
-    def __call__(self, request):
-        return render('category_list.html')
+# Оставил на случай если в будущем уберу категории из индекса
+# class CategoryList:
+#     def __call__(self, request):
+#         categories = site.categories
+#
+#         return '200 OK', render('create_category.html', categories=categories)
 
 
 class CategoryCreate:
