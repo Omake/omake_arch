@@ -1,6 +1,6 @@
 from omake_framework.templator import render
 from patterns.creational_patterns import Engine, Logger
-from patterns.structural_patterns import AppRoute
+from patterns.structural_patterns import AppRoute, Debug
 
 # Скопировал этот момент так как не придумал рациональней
 site = Engine()
@@ -19,6 +19,7 @@ class Index:
 
 @AppRoute(route_list, '/about/')
 class About:
+    @Debug('yolo')
     def __call__(self, request):
         return '200 OK', render('about.html')
 
