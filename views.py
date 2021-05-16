@@ -1,22 +1,29 @@
 from omake_framework.templator import render
 from patterns.creational_patterns import Engine, Logger
+from patterns.structural_patterns import AppRoute
 
 # Скопировал этот момент так как не придумал рациональней
 site = Engine()
 logger = Logger('main_logger')
 
+# Создаем словарь для обработки адресов
+route_list = {}
 
+
+@AppRoute(route_list, '/')
 class Index:
     def __call__(self, request):
         logger.log('Открыт список категорий')
         return '200 OK', render('index.html', objects_list=site.categories)
 
 
+@AppRoute(route_list, '/about/')
 class About:
     def __call__(self, request):
         return '200 OK', render('about.html')
 
 
+@AppRoute(route_list, '/courses-list/')
 class CourseList:
     def __call__(self, request):
         logger.log('Открыт список курсов')
@@ -24,6 +31,7 @@ class CourseList:
         return '200 OK', render('course_list.html', objects_list=category.courses, name=category.name, id=category.id)
 
 
+@AppRoute(route_list, '/create-course/')
 class CourseCreate:
     category_id = -1
 
@@ -51,14 +59,7 @@ class CourseCreate:
             return '200 OK', render('create_course.html', name=category.name)
 
 
-# Оставил на случай если в будущем уберу категории из индекса
-# class CategoryList:
-#     def __call__(self, request):
-#         categories = site.categories
-#
-#         return '200 OK', render('create_category.html', categories=categories)
-
-
+@AppRoute(route_list, '/create-category/')
 class CategoryCreate:
     def __call__(self, request):
         if request['method'] == 'POST':
@@ -75,3 +76,11 @@ class CategoryCreate:
         else:
             categories = site.categories
             return '200 OK', render('create_category.html', categories=categories)
+
+
+# Оставил на случай если в будущем уберу категории из индекса
+# class CategoryList:
+#     def __call__(self, request):
+#         categories = site.categories
+#
+#         return '200 OK', render('create_category.html', categories=categories)

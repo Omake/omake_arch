@@ -30,7 +30,7 @@ class Framework:
 
             request['request_params'] = params
 
-        elif request_method == 'POST':
+        else:
             data = Framework.get_data(environ)
             data = Framework.parse_wsgi_input_data(data)
 

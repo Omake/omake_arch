@@ -1,7 +1,7 @@
 from wsgiref.simple_server import make_server
 from omake_framework.main import Framework
 from omake_framework.front_controller import fronts_list
-from urls import route_list
+from views import route_list
 
 
 server_application = Framework(route_list, fronts_list)
