@@ -19,13 +19,14 @@ class Index:
 
 @AppRoute(route_list, '/about/')
 class About:
-    @Debug()
+    @Debug('About')
     def __call__(self, request):
         return '200 OK', render('about.html')
 
 
 @AppRoute(route_list, '/courses-list/')
 class CourseList:
+    @Debug('CourseList')
     def __call__(self, request):
         logger.log('Открыт список курсов')
         category = site.get_category_by_id(int(request['request_params']['id']))

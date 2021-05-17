@@ -1,4 +1,4 @@
-from time import time
+from time import time, ctime
 
 
 # структурный паттерн - Декоратор
@@ -19,12 +19,20 @@ class AppRoute:
 
 # структурный паттерн - Декоратор
 class Debug:
+    def __init__(self, name):
+        self.name = name
 
     def __call__(self, method):
         def wrapper(func):
             def get_time(*args, **kwargs):
+
+                start_time = time()
                 result = func(*args, **kwargs)
-                print(time())
+                end_time = time()
+
+                delta_time = end_time - start_time
+
+                print(f'{ctime()} Метод: {self.name} выполнялся {delta_time} секунд')
 
                 return result
 
