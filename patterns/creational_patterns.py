@@ -1,6 +1,16 @@
 import quopri
 
 
+class User:
+    def __init__(self, name, email):
+        self.name = name
+        self.email = email
+
+
+class Student(User):
+    pass
+
+
 class Course:
     def __init__(self, name, category):
         self.name = name

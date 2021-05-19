@@ -1,6 +1,7 @@
 from omake_framework.templator import render
 from patterns.creational_patterns import Engine, Logger
 from patterns.structural_patterns import AppRoute, Debug
+from patterns.behavioral_patterns import ListView
 
 # Скопировал этот момент так как не придумал рациональней
 site = Engine()
@@ -10,11 +11,10 @@ logger = Logger('main_logger')
 route_list = {}
 
 
-@AppRoute(route_list, '/')
-class Index:
-    def __call__(self, request):
-        logger.log('Открыт список категорий')
-        return '200 OK', render('index.html', objects_list=site.categories)
+# class Index:
+#     def __call__(self, request):
+#         logger.log('Открыт список категорий')
+#         return '200 OK', render('index.html', objects_list=site.categories)
 
 
 @AppRoute(route_list, '/about/')
@@ -61,6 +61,16 @@ class CourseCreate:
             return '200 OK', render('create_course.html', name=category.name)
 
 
+@AppRoute(route_list, '/')
+class CategoryList(ListView):
+    template_name = 'index.html'
+    queryset = site.categories
+
+    # def __call__(self, request):
+    #     logger.log('Открыт список категорий')
+    #     return '200 OK', render('index.html', objects_list=site.categories)
+
+
 @AppRoute(route_list, '/create-category/')
 class CategoryCreate:
     def __call__(self, request):
@@ -78,11 +88,3 @@ class CategoryCreate:
         else:
             categories = site.categories
             return '200 OK', render('create_category.html', categories=categories)
-
-
-# Оставил на случай если в будущем уберу категории из индекса
-# class CategoryList:
-#     def __call__(self, request):
-#         categories = site.categories
-#
-#         return '200 OK', render('create_category.html', categories=categories)
