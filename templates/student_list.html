@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block title %}
-Список курсов
+Создание студента
 {% endblock %}
 {% block style %}
 	{% include "inc-style.html" %}
@@ -9,20 +9,20 @@
 	{% include "inc-menu.html" %}
 {% endblock %}
 {% block body %}
+	<div>
+		<li>
+			<a href="/add-student/">Добавить студента на курс</a>
+		</li>
+	</div>
+    <h1>Список студентов</h1>
     <div>
-        <a href="/">назад на главную</a>
-    </div>
 
-    <br>
-    <br>
-
-    <div>
-        <a href="/create-course/?id={{id}}">Создать новый курс</a>
-        <br>
-        <h1>Список курсов для категории "{{name}}"</h1>
         {% for item in objects_list %}
         <li>
             {{item.name}}
+            {% for course in item.courses %}
+                {{course.name}}
+            {% endfor %}
         </li>
         {% endfor %}
     </div>

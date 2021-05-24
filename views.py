@@ -1,10 +1,13 @@
+from datetime import date
 from omake_framework.templator import render
 from patterns.creational_patterns import Engine, Logger
 from patterns.structural_patterns import AppRoute, Debug
 from patterns.behavioral_patterns import ListView
 
+
 # Скопировал этот момент так как не придумал рациональней
 site = Engine()
+
 logger = Logger('main_logger')
 
 # Создаем словарь для обработки адресов
@@ -43,16 +46,14 @@ class CourseCreate:
             data = request['data']
             course_name = site.decode_value(data['name'])
             category = site.get_category_by_id(int(self.category_id))
-            new_course = site.create_category(course_name, self.category_id)
-
-            # Добавляем курс в категорию
-            category.courses.append(new_course)
+            new_course = site.create_course('course_a', course_name, category)
 
             # Добавляем курс в движок
             site.courses.append(new_course)
 
             return '200 OK', render('course_list.html', objects_list=category.courses,
                                     name=category.name, id=category.id)
+
 
         else:
             self.category_id = int(request['request_params']['id'])
@@ -66,10 +67,6 @@ class CategoryList(ListView):
     template_name = 'index.html'
     queryset = site.categories
 
-    # def __call__(self, request):
-    #     logger.log('Открыт список категорий')
-    #     return '200 OK', render('index.html', objects_list=site.categories)
-
 
 @AppRoute(route_list, '/create-category/')
 class CategoryCreate:
@@ -82,9 +79,54 @@ class CategoryCreate:
             new_category = site.create_category(category_name, category_id)
 
             site.categories.append(new_category)
-
             return '200 OK', render('index.html', objects_list=site.categories)
 
         else:
             categories = site.categories
             return '200 OK', render('create_category.html', categories=categories)
+
+
+@AppRoute(route_list, url='/student-list/')
+class StudentList(ListView):
+    template_name = 'student_list.html'
+    queryset = site.students
+
+
+@AppRoute(route_list, url='/study_programs/')
+class StudyPrograms:
+    @Debug(name='StudyPrograms')
+    def __call__(self, request):
+        if request['method'] == 'POST':
+            user_info = request['data']
+
+            # Декодим данные
+            user_info['name'] = site.decode_value(user_info['name'])
+            user_info['email'] = site.decode_value(user_info['email'])
+
+            # Создаем студента
+            student = site.create_student(name=user_info['name'], email=user_info['email'],
+                                          location=user_info['location'])
+
+            # Добавляем студента в движок
+            site.students.append(student)
+
+        return '200 OK', render('study-programs.html', data=date.today())
+
+
+@AppRoute(route_list, url='/add-student/')
+class AddStudent:
+    @Debug(name='AddStudent')
+    def __call__(self, request):
+        if request['method'] == 'POST':
+            data = request['data']
+            course_name = site.decode_value(data['course_name'])
+            student_name = site.decode_value(data['student_name'])
+
+            course = site.get_course_by_name(course_name)
+            student = site.get_student_by_name(student_name)
+
+            course.students.append(student)
+
+            return '200 OK', render('add_student.html', courses=site.courses, students=site.students)
+        else:
+            return '200 OK', render('add_student.html', courses=site.courses, students=site.students)

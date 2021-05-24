@@ -8,6 +8,13 @@ class User:
 
 
 class Student(User):
+    def __init__(self, name, email, location, membership):
+        super().__init__(name, email)
+        self.location = location
+        self.membership = membership
+
+
+class Teacher(User):
     pass
 
 
@@ -15,7 +22,8 @@ class Course:
     def __init__(self, name, category):
         self.name = name
         self.category = category
-        self.category.append(self)
+        self.category.courses.append(self)
+        self.students = []
 
 
 class Category:
@@ -53,6 +61,11 @@ class Engine:
     def __init__(self):
         self.categories = []
         self.courses = []
+        self.students = []
+
+    @staticmethod
+    def create_student(name, email, location, membership='no'):
+        return Student(name, email, location, membership)
 
     @staticmethod
     def create_category(name, category_id):
@@ -71,6 +84,16 @@ class Engine:
     def get_category_by_id(self, category_id):
         for item in self.categories:
             if item.id == category_id:
+                return item
+
+    def get_course_by_name(self, course_name):
+        for item in self.courses:
+            if item.name == course_name:
+                return item
+
+    def get_student_by_name(self, student_name):
+        for item in self.students:
+            if item.name == student_name:
                 return item
 
 
