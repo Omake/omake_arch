@@ -1,12 +1,16 @@
+import sqlite3
 from datetime import date
 from omake_framework.templator import render
 from patterns.creational_patterns import Engine, Logger
 from patterns.structural_patterns import AppRoute, Debug
 from patterns.behavioral_patterns import ListView
+from patterns.mapper import StudentMapper
 
 
 # Скопировал этот момент так как не придумал рациональней
 site = Engine()
+
+connection = sqlite3.connect('patterns_database.sqlite')
 
 logger = Logger('main_logger')
 
@@ -54,7 +58,6 @@ class CourseCreate:
             return '200 OK', render('course_list.html', objects_list=category.courses,
                                     name=category.name, id=category.id)
 
-
         else:
             self.category_id = int(request['request_params']['id'])
             category = site.get_category_by_id(int(self.category_id))
@@ -89,7 +92,11 @@ class CategoryCreate:
 @AppRoute(route_list, url='/student-list/')
 class StudentList(ListView):
     template_name = 'student_list.html'
-    queryset = site.students
+
+    def get_queryset(self):
+        mapper = StudentMapper(connection)
+
+        return mapper.get_all_students()
 
 
 @AppRoute(route_list, url='/study_programs/')
@@ -106,6 +113,9 @@ class StudyPrograms:
             # Создаем студента
             student = site.create_student(name=user_info['name'], email=user_info['email'],
                                           location=user_info['location'])
+            # Добавляем студента в базу
+            mapper = StudentMapper(connection)
+            mapper.insert_student(student)
 
             # Добавляем студента в движок
             site.students.append(student)
@@ -126,6 +136,9 @@ class AddStudent:
             student = site.get_student_by_name(student_name)
 
             course.students.append(student)
+
+            print(f'Студент {student_name} успешно записался на курс {course_name}\n'
+                  f'Список студентов курса: {course.students}')
 
             return '200 OK', render('add_student.html', courses=site.courses, students=site.students)
         else:
