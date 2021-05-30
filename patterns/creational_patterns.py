@@ -1,4 +1,5 @@
 import quopri
+from patterns.unitofwork import DomainObject
 
 
 class User:
@@ -7,7 +8,7 @@ class User:
         self.email = email
 
 
-class Student(User):
+class Student(User, DomainObject):
     def __init__(self, name, email, location, membership):
         super().__init__(name, email)
         self.location = location

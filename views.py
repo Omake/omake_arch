@@ -5,7 +5,7 @@ from patterns.creational_patterns import Engine, Logger
 from patterns.structural_patterns import AppRoute, Debug
 from patterns.behavioral_patterns import ListView
 from patterns.mapper import StudentMapper
-
+from patterns.unitofwork import UnitOfWork
 
 # Скопировал этот момент так как не придумал рациональней
 site = Engine()
@@ -16,6 +16,11 @@ logger = Logger('main_logger')
 
 # Создаем словарь для обработки адресов
 route_list = {}
+
+
+# Настройка unit of work
+UnitOfWork.new_current()
+UnitOfWork.get_current().set_mapper(StudentMapper(connection))
 
 
 # class Index:
@@ -114,8 +119,8 @@ class StudyPrograms:
             student = site.create_student(name=user_info['name'], email=user_info['email'],
                                           location=user_info['location'])
             # Добавляем студента в базу
-            mapper = StudentMapper(connection)
-            mapper.insert_student(student)
+            student.mark_new()
+            UnitOfWork.get_current().commit()
 
             # Добавляем студента в движок
             site.students.append(student)

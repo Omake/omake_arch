@@ -19,7 +19,7 @@ class StudentMapper:
 
         return student_list
 
-    def insert_student(self, student):
+    def insert(self, student):
         statement = 'INSERT INTO students (name, email, location, membership) VALUES (?,?,?,?)'
         self.cursor.execute(statement, (student.name, student.email, student.location, student.membership))
         self.con.commit()
